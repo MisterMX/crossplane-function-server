@@ -1,0 +1,9 @@
+
+# Run the function and render with:
+# crossplane beta render examples/simple/test/xr.yaml examples/simple/test/composition.yaml examples/simple/test/fn.yaml
+---
+apiVersion: example.com/v1alpha1
+kind: Example
+metadata:
+  name: example
+spec: {}

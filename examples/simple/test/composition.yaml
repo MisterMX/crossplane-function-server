@@ -1,0 +1,23 @@
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: example
+spec:
+  compositeTypeRef:
+    apiVersion: example.com/v1alpha1
+    kind: Example
+  mode: Pipeline
+  pipeline:
+    - step: render
+      functionRef:
+        name: server
+      input:
+        apiVersion: server.fn.crossplane.io/v1alpha1
+        kind: ServerInput
+        spec:
+          functionName: my-function # <-- This specifies which server function to execute
+          input:
+            apiGroups: [""]
+            resources: ["pods"]
+  writeConnectionSecretsToNamespace: crossplane-system
