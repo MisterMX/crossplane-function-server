@@ -57,6 +57,9 @@ func (s *Server) RunFunction(ctx context.Context, req *fnapi.RunFunctionRequest)
 	if fnRes.desiredContext != nil {
 		res.Context = fnRes.desiredContext
 	}
+	if fnRes.results != nil {
+		res.Results = fnRes.results
+	}
 	return res, nil
 }
 
@@ -90,6 +93,11 @@ type serverFunctionRes struct {
 	desiredComposite *fnapi.Resource
 	desiredComposed  map[string]*fnapi.Resource
 	desiredContext   *structpb.Struct
+	results          []*fnapi.Result
+}
+
+func (r *serverFunctionRes) SetCompositeRaw(res *fnapi.Resource) {
+	r.desiredComposite = res
 }
 
 func (r *serverFunctionRes) SetComposite(o runtime.Object, mods ...ResourceModifier) error {
@@ -106,6 +114,13 @@ func (r *serverFunctionRes) SetComposite(o runtime.Object, mods ...ResourceModif
 	return nil
 }
 
+func (r *serverFunctionRes) SetComposedRaw(name string, res *fnapi.Resource) {
+	if r.desiredComposed == nil {
+		r.desiredComposed = map[string]*fnapi.Resource{}
+	}
+	r.desiredComposed[name] = res
+}
+
 func (r *serverFunctionRes) SetComposed(name string, o runtime.Object, mods ...ResourceModifier) error {
 	raw, err := resource.AsStruct(o)
 	if err != nil {
@@ -117,10 +132,7 @@ func (r *serverFunctionRes) SetComposed(name string, o runtime.Object, mods ...R
 	for _, m := range mods {
 		m(res)
 	}
-	if r.desiredComposed == nil {
-		r.desiredComposed = map[string]*fnapi.Resource{}
-	}
-	r.desiredComposed[name] = res
+	r.SetComposedRaw(name, res)
 	return nil
 }
 
@@ -136,4 +148,8 @@ func (r *serverFunctionRes) SetContextField(key string, value any) error {
 	}
 	r.desiredContext.Fields[key] = raw
 	return nil
+}
+
+func (r *serverFunctionRes) SetNativeResults(results []*fnapi.Result) {
+	r.results = results
 }

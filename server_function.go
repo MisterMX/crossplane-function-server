@@ -45,13 +45,30 @@ type ServerFunctionResponse interface {
 	// resource for the given name.
 	SetComposite(o runtime.Object, mods ...ResourceModifier) error
 
+	// SetCompositeRaw sets the desired response state directly using the
+	// native SDK types.
+	//
+	// This is useful if the desired resource state already exists as a native
+	// type so there is no need to work with runtime.Objects.
+	SetCompositeRaw(res *fnapi.Resource)
+
 	// SetComposed saves the given composed object as desired composed object
 	// identified by the given name for this function's response.
 	SetComposed(name string, o runtime.Object, mods ...ResourceModifier) error
 
+	// SetComposedRaw sets the desired composed resource state directly using
+	// the native SDK types.
+	//
+	// This is useful if the desired resource state already exists as a native
+	// type so there is no need to work with runtime.Objects.
+	SetComposedRaw(name string, res *fnapi.Resource)
+
 	// SetContextField sets the value of the context field key to the given
 	// value. The passed value must be convertable to protobuf.
 	SetContextField(key string, value any) error
+
+	// SetNativeResults of the underlying SDK requests.
+	SetNativeResults(results []*fnapi.Result)
 }
 
 // ResourceModifier applies modifications to a bare-metal Crossplane function
