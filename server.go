@@ -114,6 +114,13 @@ func (r *RunServerFunctionResponse) SetComposite(o runtime.Object, mods ...Resou
 	return nil
 }
 
+func (r *RunServerFunctionResponse) GetComposite(target runtime.Object) error {
+	if r.DesiredComposite == nil || r.DesiredComposite.Resource == nil {
+		return nil // Return an error here?
+	}
+	return resource.AsObject(r.DesiredComposite.Resource, target)
+}
+
 func (r *RunServerFunctionResponse) SetComposedRaw(name string, res *fnapi.Resource) {
 	if r.DesiredComposed == nil {
 		r.DesiredComposed = map[string]*fnapi.Resource{}
@@ -134,6 +141,14 @@ func (r *RunServerFunctionResponse) SetComposed(name string, o runtime.Object, m
 	}
 	r.SetComposedRaw(name, res)
 	return nil
+}
+
+func (r *RunServerFunctionResponse) GetComposed(name string, target runtime.Object) error {
+	state, exists := r.DesiredComposed[name]
+	if !exists {
+		return errNotFound(name)
+	}
+	return resource.AsObject(state.Resource, target)
 }
 
 func (r *RunServerFunctionResponse) SetContextField(key string, value any) error {

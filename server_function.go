@@ -45,6 +45,10 @@ type ServerFunctionResponse interface {
 	// resource for the given name.
 	SetComposite(o runtime.Object, mods ...ResourceModifier) error
 
+	// GetComposite gets the current state of the composite resource of this
+	// response and writes its contents into the given target object.
+	GetComposite(target runtime.Object) error
+
 	// SetCompositeRaw sets the desired response state directly using the
 	// native SDK types.
 	//
@@ -55,6 +59,10 @@ type ServerFunctionResponse interface {
 	// SetComposed saves the given composed object as desired composed object
 	// identified by the given name for this function's response.
 	SetComposed(name string, o runtime.Object, mods ...ResourceModifier) error
+
+	// GetComposed looks up the composed resource in the current response object
+	// and writes its contents into the given target object.
+	GetComposed(name string, target runtime.Object) error
 
 	// SetComposedRaw sets the desired composed resource state directly using
 	// the native SDK types.
