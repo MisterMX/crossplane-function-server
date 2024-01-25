@@ -35,11 +35,11 @@ func (s *Server) RunFunction(ctx context.Context, req *fnapi.RunFunctionRequest)
 		return nil, errors.Errorf("no function with name %q", serverInput.Spec.FunctionName)
 	}
 
-	fnReq := serverFunctionReq{
-		req:         req,
-		serverInput: serverInput,
+	fnReq := RunServerFunctionRequest{
+		Req:         req,
+		ServerInput: serverInput,
 	}
-	fnRes := serverFunctionRes{}
+	fnRes := RunServerFunctionResponse{}
 	if err := fn.Run(ctx, &fnReq, &fnRes); err != nil {
 		return nil, errors.Wrapf(err, "error while running subroutine function %q", serverInput.Spec.FunctionName)
 	}
@@ -48,36 +48,36 @@ func (s *Server) RunFunction(ctx context.Context, req *fnapi.RunFunctionRequest)
 		Desired: req.GetDesired(),
 		Context: req.GetContext(),
 	}
-	if fnRes.desiredComposite != nil {
-		res.Desired.Composite = fnRes.desiredComposite
+	if fnRes.DesiredComposite != nil {
+		res.Desired.Composite = fnRes.DesiredComposite
 	}
-	if fnRes.desiredComposed != nil {
-		res.Desired.Resources = fnRes.desiredComposed
+	if fnRes.DesiredComposed != nil {
+		res.Desired.Resources = fnRes.DesiredComposed
 	}
-	if fnRes.desiredContext != nil {
-		res.Context = fnRes.desiredContext
+	if fnRes.DesiredContext != nil {
+		res.Context = fnRes.DesiredContext
 	}
-	if fnRes.results != nil {
-		res.Results = fnRes.results
+	if fnRes.Results != nil {
+		res.Results = fnRes.Results
 	}
 	return res, nil
 }
 
-type serverFunctionReq struct {
-	req         *fnapi.RunFunctionRequest
-	serverInput *v1alpha1.ServerInput
+type RunServerFunctionRequest struct {
+	Req         *fnapi.RunFunctionRequest
+	ServerInput *v1alpha1.ServerInput
 }
 
-func (r *serverFunctionReq) GetNativeRequest() *fnapi.RunFunctionRequest {
-	return r.req
+func (r *RunServerFunctionRequest) GetNativeRequest() *fnapi.RunFunctionRequest {
+	return r.Req
 }
 
-func (r *serverFunctionReq) GetComposite(target runtime.Object) error {
-	return resource.AsObject(r.req.GetObserved().GetComposite().GetResource(), target)
+func (r *RunServerFunctionRequest) GetComposite(target runtime.Object) error {
+	return resource.AsObject(r.Req.GetObserved().GetComposite().GetResource(), target)
 }
 
-func (r *serverFunctionReq) GetComposed(name string, target runtime.Object) error {
-	resources := r.req.GetObserved().GetResources()
+func (r *RunServerFunctionRequest) GetComposed(name string, target runtime.Object) error {
+	resources := r.Req.GetObserved().GetResources()
 	res, exists := resources[name]
 	if !exists {
 		return nil
@@ -85,43 +85,43 @@ func (r *serverFunctionReq) GetComposed(name string, target runtime.Object) erro
 	return resource.AsObject(res.GetResource(), target)
 }
 
-func (r *serverFunctionReq) GetInput(target any) error {
-	return json.Unmarshal(r.serverInput.Spec.Input.Raw, target)
+func (r *RunServerFunctionRequest) GetInput(target any) error {
+	return json.Unmarshal(r.ServerInput.Spec.Input.Raw, target)
 }
 
-type serverFunctionRes struct {
-	desiredComposite *fnapi.Resource
-	desiredComposed  map[string]*fnapi.Resource
-	desiredContext   *structpb.Struct
-	results          []*fnapi.Result
+type RunServerFunctionResponse struct {
+	DesiredComposite *fnapi.Resource
+	DesiredComposed  map[string]*fnapi.Resource
+	DesiredContext   *structpb.Struct
+	Results          []*fnapi.Result
 }
 
-func (r *serverFunctionRes) SetCompositeRaw(res *fnapi.Resource) {
-	r.desiredComposite = res
+func (r *RunServerFunctionResponse) SetCompositeRaw(res *fnapi.Resource) {
+	r.DesiredComposite = res
 }
 
-func (r *serverFunctionRes) SetComposite(o runtime.Object, mods ...ResourceModifier) error {
+func (r *RunServerFunctionResponse) SetComposite(o runtime.Object, mods ...ResourceModifier) error {
 	raw, err := resource.AsStruct(o)
 	if err != nil {
 		return err
 	}
-	r.desiredComposite = &fnapi.Resource{
+	r.DesiredComposite = &fnapi.Resource{
 		Resource: raw,
 	}
 	for _, m := range mods {
-		m(r.desiredComposite)
+		m(r.DesiredComposite)
 	}
 	return nil
 }
 
-func (r *serverFunctionRes) SetComposedRaw(name string, res *fnapi.Resource) {
-	if r.desiredComposed == nil {
-		r.desiredComposed = map[string]*fnapi.Resource{}
+func (r *RunServerFunctionResponse) SetComposedRaw(name string, res *fnapi.Resource) {
+	if r.DesiredComposed == nil {
+		r.DesiredComposed = map[string]*fnapi.Resource{}
 	}
-	r.desiredComposed[name] = res
+	r.DesiredComposed[name] = res
 }
 
-func (r *serverFunctionRes) SetComposed(name string, o runtime.Object, mods ...ResourceModifier) error {
+func (r *RunServerFunctionResponse) SetComposed(name string, o runtime.Object, mods ...ResourceModifier) error {
 	raw, err := resource.AsStruct(o)
 	if err != nil {
 		return err
@@ -136,9 +136,9 @@ func (r *serverFunctionRes) SetComposed(name string, o runtime.Object, mods ...R
 	return nil
 }
 
-func (r *serverFunctionRes) SetContextField(key string, value any) error {
-	if r.desiredContext == nil {
-		r.desiredContext = &structpb.Struct{
+func (r *RunServerFunctionResponse) SetContextField(key string, value any) error {
+	if r.DesiredContext == nil {
+		r.DesiredContext = &structpb.Struct{
 			Fields: map[string]*structpb.Value{},
 		}
 	}
@@ -146,10 +146,10 @@ func (r *serverFunctionRes) SetContextField(key string, value any) error {
 	if err != nil {
 		return errors.Wrap(err, "cannot convert context value to protobuf")
 	}
-	r.desiredContext.Fields[key] = raw
+	r.DesiredContext.Fields[key] = raw
 	return nil
 }
 
-func (r *serverFunctionRes) SetNativeResults(results []*fnapi.Result) {
-	r.results = results
+func (r *RunServerFunctionResponse) SetNativeResults(results []*fnapi.Result) {
+	r.Results = results
 }
