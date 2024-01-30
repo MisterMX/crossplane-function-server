@@ -45,7 +45,6 @@ func TestFunction(t *testing.T, fn server.ServerFunction, opts ...TestFunctionOp
 		Fields: map[string]*structpb.Value{},
 	}
 	tc.want.desiredResources = map[string]*fnapi.Resource{}
-	tc.want.results = []*fnapi.Result{}
 	for _, o := range opts {
 		o(tc)
 	}
