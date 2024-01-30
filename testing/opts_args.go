@@ -9,6 +9,7 @@ import (
 	evtv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/util/yaml"
 )
 
@@ -169,7 +170,10 @@ func WithEnvironmentFromConfigsYAML(rawYaml []byte) TestFunctionOpt {
 	if err != nil {
 		panic(err.Error())
 	}
-	env := map[string]interface{}{}
+
+	env := unstructured.Unstructured{
+		Object: map[string]interface{}{},
+	}
 	for _, c := range configs {
 		data, exists := c.Object["data"]
 		if !exists {
@@ -179,7 +183,13 @@ func WithEnvironmentFromConfigsYAML(rawYaml []byte) TestFunctionOpt {
 		if !ok {
 			continue
 		}
-		env = mergeMaps(env, dataMap)
+		env.Object = mergeMaps(env.Object, dataMap)
 	}
-	return WithContextValue(fncontext.KeyEnvironment, env)
+	// Environment Needs a kind because
+	env.SetGroupVersionKind(schema.GroupVersionKind{
+		Group:   "internal.crossplane.io",
+		Version: "v1alpha1",
+		Kind:    "Environment",
+	})
+	return WithContextValue(fncontext.KeyEnvironment, env.UnstructuredContent())
 }
