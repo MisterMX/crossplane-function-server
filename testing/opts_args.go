@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 
 	"github.com/crossplane/crossplane-runtime/pkg/meta"
+	fncontext "github.com/crossplane/function-sdk-go/context"
 	fnapi "github.com/crossplane/function-sdk-go/proto/v1beta1"
 	evtv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -154,4 +155,28 @@ func WithObservedCompositeJSON(rawJSON []byte) TestFunctionOpt {
 		panic(err.Error())
 	}
 	return WithObservedCompositeObject(u)
+}
+
+// WithEnvironmentFromConfigsYAML is a custom test opt that creates an
+// environment from a series of EnvironmentConfigs that are read from a
+// multi-document YAML file and adds it as environment to the request
+// context of a function.
+func WithEnvironmentFromConfigsYAML(rawYaml []byte) TestFunctionOpt {
+	configs, err := unmarshalObjectsYAML(rawYaml)
+	if err != nil {
+		panic(err.Error())
+	}
+	env := map[string]interface{}{}
+	for _, c := range configs {
+		data, exists := c.Object["data"]
+		if !exists {
+			continue
+		}
+		dataMap, ok := data.(map[string]interface{})
+		if !ok {
+			continue
+		}
+		env = mergeMaps(env, dataMap)
+	}
+	return WithContextValue(fncontext.KeyEnvironment, env)
 }
