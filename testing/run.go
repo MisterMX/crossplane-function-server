@@ -6,11 +6,11 @@ import (
 
 	fnapi "github.com/crossplane/function-sdk-go/proto/v1beta1"
 	"github.com/google/go-cmp/cmp"
-	"github.com/mistermx/crossplane-function-server/apis/v1alpha1"
 	"google.golang.org/protobuf/types/known/structpb"
 	evtv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 
 	server "github.com/mistermx/crossplane-function-server"
+	"github.com/mistermx/crossplane-function-server/apis/v1alpha1"
 )
 
 type FunctionTest struct {

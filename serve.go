@@ -24,7 +24,7 @@ func NewServer(opts ...ServerOption) *Server {
 	return server
 }
 
-// WithFunction registeres a ServerFunction at a Server with a given name.
+// WithFunction registers a ServerFunction at a Server with a given name.
 func WithFunction(name string, fn ServerFunction) ServerOption {
 	return func(server *Server) {
 		server.functions[name] = fn
