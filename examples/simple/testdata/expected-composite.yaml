@@ -1,8 +1,0 @@
----
-apiVersion: example.com/v1alpha1
-kind: Example
-metadata:
-  name: example
-  annotations:
-    fn-server.test/resource-name: clusterRole
-spec: {}

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	_ "embed"
 	"testing"
 
@@ -17,9 +18,6 @@ var (
 
 	//go:embed testdata/expected-resources.yaml
 	expectedResources []byte
-
-	//go:embed testdata/expected-composite.yaml
-	expectedComposite []byte
 )
 
 func TestFunction(t *testing.T) {
@@ -28,6 +26,5 @@ func TestFunction(t *testing.T) {
 		fntesting.WithObservedCompositeYAML(composite),
 		fntesting.WithInputYAML(input),
 		fntesting.ExpectDesiredResourcesYAML(expectedResources),
-		fntesting.ExpectDesiredCompositeYAML(expectedComposite),
-	)
+	).Run(context.Background())
 }

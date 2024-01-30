@@ -89,8 +89,14 @@ func ExpectDesiredResourcesYAML(rawYAML []byte) TestFunctionOpt {
 			}
 			meta.RemoveAnnotations(u, AnnotationKeyResourceName)
 
+			// If the name annotation was the only annotation in the resource,
+			// delete the entire field to avoid creating unnecessary diffs.
+			if len(u.GetAnnotations()) == 0 {
+				u.SetAnnotations(nil)
+			}
+
 			str := mustObjectAsStruct(u)
-			tc.args.observedResources[key] = &fnapi.Resource{
+			tc.want.desiredResources[key] = &fnapi.Resource{
 				Resource: str,
 				// TODO: Set connection details and ready state
 			}
