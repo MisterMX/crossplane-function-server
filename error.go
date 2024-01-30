@@ -1,14 +1,19 @@
 package server
 
-import "fmt"
+import (
+	"fmt"
 
-type errNotFound string
+	"github.com/pkg/errors"
+)
+
+type errNotFound struct {
+	name string
+}
 
 func (e errNotFound) Error() string {
-	return fmt.Sprintf("not found: %s", string(e))
+	return fmt.Sprintf("not found: %s", e.name)
 }
 
 func IsNotFoundError(err error) bool {
-	_, ok := err.(*errNotFound)
-	return ok
+	return errors.As(err, &errNotFound{})
 }

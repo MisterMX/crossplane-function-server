@@ -161,6 +161,9 @@ func WithObservedCompositeJSON(rawJSON []byte) TestFunctionOpt {
 // environment from a series of EnvironmentConfigs that are read from a
 // multi-document YAML file and adds it as environment to the request
 // context of a function.
+//
+// Experimental: Environments are a Crossplane alpha feature and are prone to
+// change in the future. This applies to this functions as well.
 func WithEnvironmentFromConfigsYAML(rawYaml []byte) TestFunctionOpt {
 	configs, err := unmarshalObjectsYAML(rawYaml)
 	if err != nil {
