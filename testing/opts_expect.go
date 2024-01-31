@@ -3,6 +3,8 @@ package testing
 import (
 	"github.com/crossplane/crossplane-runtime/pkg/meta"
 	fnapi "github.com/crossplane/function-sdk-go/proto/v1beta1"
+	yamlutils "github.com/mistermx/go-utils/k8s/yaml"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
 )
 
@@ -78,7 +80,7 @@ func ExpectDesiredResourceJSON(name string, rawJSON []byte, mods ...ResourceModi
 // the name of the resource.
 func ExpectDesiredResourcesYAML(rawYAML []byte) TestFunctionOpt {
 	return func(tc *FunctionTest) {
-		uList, err := unmarshalObjectsYAML(rawYAML)
+		uList, err := yamlutils.UnmarshalObjects[*unstructured.Unstructured](rawYAML)
 		if err != nil {
 			panic(err.Error())
 		}

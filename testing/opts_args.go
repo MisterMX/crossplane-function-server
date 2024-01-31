@@ -6,6 +6,8 @@ import (
 	"github.com/crossplane/crossplane-runtime/pkg/meta"
 	fncontext "github.com/crossplane/function-sdk-go/context"
 	fnapi "github.com/crossplane/function-sdk-go/proto/v1beta1"
+	"github.com/mistermx/go-utils/generic/maps"
+	yamlutils "github.com/mistermx/go-utils/k8s/yaml"
 	evtv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -80,9 +82,9 @@ func WithObservedResourceObject(name string, o runtime.Object) TestFunctionOpt {
 
 // WithObservedResourceYAML reads an object from a single YAML document and adds
 // it to the observed state passed to the function.
-func WithObservedResourceYAML(name string, rawYaml []byte) TestFunctionOpt {
+func WithObservedResourceYAML(name string, rawYAML []byte) TestFunctionOpt {
 	u := &unstructured.Unstructured{}
-	if err := yaml.Unmarshal(rawYaml, u); err != nil {
+	if err := yaml.Unmarshal(rawYAML, u); err != nil {
 		panic(err.Error())
 	}
 	return WithObservedResourceObject(name, u)
@@ -109,7 +111,7 @@ const AnnotationKeyResourceName = "fn-server.test/resource-name"
 // the name of the resource.
 func WithObservedResourcesYAML(rawYAML []byte) TestFunctionOpt {
 	return func(tc *FunctionTest) {
-		uList, err := unmarshalObjectsYAML(rawYAML)
+		uList, err := yamlutils.UnmarshalObjects[*unstructured.Unstructured](rawYAML)
 		if err != nil {
 			panic(err.Error())
 		}
@@ -140,9 +142,9 @@ func WithObservedCompositeObject(o runtime.Object) TestFunctionOpt {
 
 // WithObservedCompositeYAML reads an object from a single YAML document and
 // passes it as observed composite to the function.
-func WithObservedCompositeYAML(rawYaml []byte) TestFunctionOpt {
+func WithObservedCompositeYAML(rawYAML []byte) TestFunctionOpt {
 	u := &unstructured.Unstructured{}
-	if err := yaml.Unmarshal(rawYaml, u); err != nil {
+	if err := yaml.Unmarshal(rawYAML, u); err != nil {
 		panic(err.Error())
 	}
 	return WithObservedCompositeObject(u)
@@ -165,8 +167,8 @@ func WithObservedCompositeJSON(rawJSON []byte) TestFunctionOpt {
 //
 // Experimental: Environments are a Crossplane alpha feature and are prone to
 // change in the future. This applies to this functions as well.
-func WithEnvironmentFromConfigsYAML(rawYaml []byte) TestFunctionOpt {
-	configs, err := unmarshalObjectsYAML(rawYaml)
+func WithEnvironmentFromConfigsYAML(rawYAML []byte) TestFunctionOpt {
+	configs, err := yamlutils.UnmarshalObjects[*unstructured.Unstructured](rawYAML)
 	if err != nil {
 		panic(err.Error())
 	}
@@ -183,7 +185,7 @@ func WithEnvironmentFromConfigsYAML(rawYaml []byte) TestFunctionOpt {
 		if !ok {
 			continue
 		}
-		env.Object = mergeMaps(env.Object, dataMap)
+		env.Object = maps.Merge(env.Object, dataMap)
 	}
 	// Environment Needs a kind because
 	env.SetGroupVersionKind(schema.GroupVersionKind{
