@@ -1,6 +1,6 @@
 module github.com/mistermx/crossplane-function-server
 
-go 1.21
+go 1.21.6
 
 require (
 	github.com/alecthomas/kingpin/v2 v2.4.0
@@ -8,10 +8,12 @@ require (
 	github.com/crossplane/crossplane-runtime v1.14.2
 	github.com/crossplane/function-sdk-go v0.1.0
 	github.com/google/go-cmp v0.6.0
+	github.com/mistermx/go-utils/generic v0.0.0-20240130131955-e3bd2d9edd8b
+	github.com/mistermx/go-utils/k8s v0.0.0-20240130131955-e3bd2d9edd8b
 	github.com/pkg/errors v0.9.1
 	google.golang.org/protobuf v1.31.0
 	k8s.io/apiextensions-apiserver v0.28.3
-	k8s.io/apimachinery v0.28.3
+	k8s.io/apimachinery v0.29.1
 	sigs.k8s.io/controller-runtime v0.16.3
 	sigs.k8s.io/controller-tools v0.13.0
 )
@@ -50,14 +52,14 @@ require (
 	github.com/xhit/go-str2duration/v2 v2.1.0 // indirect
 	go.uber.org/multierr v1.11.0 // indirect
 	go.uber.org/zap v1.26.0 // indirect
-	golang.org/x/mod v0.13.0 // indirect
-	golang.org/x/net v0.17.0 // indirect
+	golang.org/x/mod v0.14.0 // indirect
+	golang.org/x/net v0.19.0 // indirect
 	golang.org/x/oauth2 v0.11.0 // indirect
-	golang.org/x/sys v0.13.0 // indirect
-	golang.org/x/term v0.13.0 // indirect
-	golang.org/x/text v0.13.0 // indirect
+	golang.org/x/sys v0.15.0 // indirect
+	golang.org/x/term v0.15.0 // indirect
+	golang.org/x/text v0.14.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
-	golang.org/x/tools v0.14.0 // indirect
+	golang.org/x/tools v0.16.1 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20230822172742-b8732ec3820d // indirect
 	google.golang.org/grpc v1.59.0 // indirect
@@ -66,10 +68,10 @@ require (
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 	k8s.io/api v0.28.3 // indirect
 	k8s.io/client-go v0.28.3 // indirect
-	k8s.io/klog/v2 v2.100.1 // indirect
-	k8s.io/kube-openapi v0.0.0-20230717233707-2695361300d9 // indirect
+	k8s.io/klog/v2 v2.110.1 // indirect
+	k8s.io/kube-openapi v0.0.0-20231010175941-2dd684a91f00 // indirect
 	k8s.io/utils v0.0.0-20230726121419-3b25d923346b // indirect
 	sigs.k8s.io/json v0.0.0-20221116044647-bc3834ca7abd // indirect
-	sigs.k8s.io/structured-merge-diff/v4 v4.2.3 // indirect
+	sigs.k8s.io/structured-merge-diff/v4 v4.4.1 // indirect
 	sigs.k8s.io/yaml v1.4.0 // indirect
 )
