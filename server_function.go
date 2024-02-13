@@ -33,8 +33,8 @@ type ServerFunctionRequest interface {
 	// GetComposed copies the current state of the composed resource identified
 	// by the given name.
 	//
-	// If a no composed resource with the given name exists, target remains
-	// unchanged.
+	// If a no composed resource with the given name exists, it returns a
+	// not-found error that be checked with [IsErrorNotFound]
 	GetComposed(name string, target runtime.Object) error
 }
 

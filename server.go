@@ -80,7 +80,7 @@ func (r *RunServerFunctionRequest) GetComposed(name string, target runtime.Objec
 	resources := r.Req.GetObserved().GetResources()
 	res, exists := resources[name]
 	if !exists {
-		return nil
+		return NewErrorNotFound(name)
 	}
 	return resource.AsObject(res.GetResource(), target)
 }
@@ -146,7 +146,7 @@ func (r *RunServerFunctionResponse) SetComposed(name string, o runtime.Object, m
 func (r *RunServerFunctionResponse) GetComposed(name string, target runtime.Object) error {
 	state, exists := r.DesiredComposed[name]
 	if !exists {
-		return errNotFound{name: name}
+		return NewErrorNotFound(name)
 	}
 	return resource.AsObject(state.Resource, target)
 }
