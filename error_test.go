@@ -19,7 +19,15 @@ func TestIsErrorNotFound(t *testing.T) {
 	}{
 		"ExpectTrue": {
 			args: args{
-				err: errNotFound{},
+				err: NewErrorNotFound("not-found"),
+			},
+			want: want{
+				isNotFound: true,
+			},
+		},
+		"ExpectWrappedTrue": {
+			args: args{
+				err: errors.Wrap(NewErrorNotFound("not-found"), "wrap"),
 			},
 			want: want{
 				isNotFound: true,

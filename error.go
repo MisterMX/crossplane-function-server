@@ -11,7 +11,7 @@ type errNotFound struct {
 }
 
 func NewErrorNotFound(name string) error {
-	return &errNotFound{name: name}
+	return errNotFound{name: name}
 }
 
 func (e errNotFound) Error() string {
